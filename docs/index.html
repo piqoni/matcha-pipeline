@@ -62,49 +62,39 @@
     <em>Select a date</em>
   </div>
 
-  <script>
-    const datesEl = document.getElementById("dates");
-    const contentEl = document.getElementById("content");
+ <script>
+  const datesEl = document.getElementById("dates");
+  const contentEl = document.getElementById("content");
 
-    async function loadIndex() {
-      // fetch the current directory listing HTML and parse it.
-      const res = await fetch("./");
-      const text = await res.text();
+  async function loadIndex() {
+    const res = await fetch("index.json");
+    const files = await res.json();
 
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(text, "text/html");
-
-      const files = [...doc.querySelectorAll("a")]
-        .map(a => a.getAttribute("href"))
-        .filter(href => href && href.match(/^\d{4}-\d{2}-\d{2}\.md$/))
-        .sort()
-        .reverse();
-
-      for (const file of files) {
-        const div = document.createElement("div");
-        div.textContent = file.replace(".md", "");
-        div.className = "date";
-        div.onclick = () => loadMarkdown(file, div);
-        datesEl.appendChild(div);
-      }
-
-      // Auto-load latest
-      if (files.length > 0) {
-        datesEl.firstChild.click();
-      }
+    for (const file of files) {
+      const div = document.createElement("div");
+      div.textContent = file.replace(".md", "");
+      div.className = "date";
+      div.onclick = () => loadMarkdown(file, div);
+      datesEl.appendChild(div);
     }
 
-    async function loadMarkdown(file, el) {
-      document.querySelectorAll(".date").forEach(d => d.classList.remove("active"));
-      el.classList.add("active");
-
-      const res = await fetch(file);
-      const md = await res.text();
-      contentEl.innerHTML = marked.parse(md);
+    if (files.length > 0) {
+      datesEl.firstChild.click();
     }
+  }
 
-    loadIndex();
-  </script>
+  async function loadMarkdown(file, el) {
+    document.querySelectorAll(".date").forEach(d => d.classList.remove("active"));
+    el.classList.add("active");
+
+    const res = await fetch(file);
+    const md = await res.text();
+    contentEl.innerHTML = marked.parse(md);
+  }
+
+  loadIndex();
+</script>
+
 
 </body>
 </html>

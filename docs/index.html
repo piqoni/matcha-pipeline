@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Digest</title>
+
+  <!-- Markdown renderer -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+
+    #sidebar {
+      width: 260px;
+      border-right: 1px solid #ddd;
+      padding: 1rem;
+      overflow-y: auto;
+      background: #fafafa;
+    }
+
+    #content {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .date {
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .date:hover {
+      background: #eee;
+    }
+
+    .date.active {
+      background: #ddd;
+      font-weight: 600;
+    }
+
+    pre {
+      background: #f6f8fa;
+      padding: 1rem;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="sidebar">
+    <h3>Daily Digests</h3>
+    <div id="dates"></div>
+  </div>
+
+  <div id="content">
+    <em>Select a date</em>
+  </div>
+
+  <script>
+    const datesEl = document.getElementById("dates");
+    const contentEl = document.getElementById("content");
+
+    async function loadIndex() {
+      // fetch the current directory listing HTML and parse it.
+      const res = await fetch("./");
+      const text = await res.text();
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(text, "text/html");
+
+      const files = [...doc.querySelectorAll("a")]
+        .map(a => a.getAttribute("href"))
+        .filter(href => href && href.match(/^\d{4}-\d{2}-\d{2}\.md$/))
+        .sort()
+        .reverse();
+
+      for (const file of files) {
+        const div = document.createElement("div");
+        div.textContent = file.replace(".md", "");
+        div.className = "date";
+        div.onclick = () => loadMarkdown(file, div);
+        datesEl.appendChild(div);
+      }
+
+      // Auto-load latest
+      if (files.length > 0) {
+        datesEl.firstChild.click();
+      }
+    }
+
+    async function loadMarkdown(file, el) {
+      document.querySelectorAll(".date").forEach(d => d.classList.remove("active"));
+      el.classList.add("active");
+
+      const res = await fetch(file);
+      const md = await res.text();
+      contentEl.innerHTML = marked.parse(md);
+    }
+
+    loadIndex();
+  </script>
+
+</body>
+</html>

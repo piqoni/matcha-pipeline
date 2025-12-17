@@ -18,7 +18,7 @@ jobs:
       - name: Create config.yaml from secret
         run: |
           cat << 'EOF' > config.yaml
-          ${{ secrets.MATCHA_CONFIG_YAML }}
+          ${{ vars.MATCHA_CONFIG_YAML }}
           EOF
 
       - name: Setup Go

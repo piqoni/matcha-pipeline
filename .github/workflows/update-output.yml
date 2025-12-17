@@ -29,20 +29,46 @@ jobs:
       - name: Install Matcha
         run: go install github.com/piqoni/matcha@latest
 
+      - name: Decrypt database
+        run: |
+          if [ -f matcha.db.enc ]; then
+            openssl enc -aes-256-cbc -pbkdf2 \
+              -d -in matcha.db.enc \
+              -out matcha.db \
+              -pass pass:"${{ secrets.MATCHA_DB_KEY }}"
+          fi
+
       - name: Run Matcha with Custom Config
         run: |
           mkdir -p docs
           matcha -c config.yaml
 
-      - name: Generate index.json for GitHub Pages
+      - name: Build HTML content
         run: |
-          cd docs
-          ls *.md 2>/dev/null | sort -r | \
-            jq -R -s -c 'split("\n")[:-1]' > index.json
+          go run build_content.go
+
+      - name: Remove plaintext markdown
+        run: rm -f docs/*.md
+
+      - name: Encrypt database
+        run: |
+          openssl enc -aes-256-cbc -pbkdf2 \
+            -salt \
+            -in matcha.db \
+            -out matcha.db.enc \
+            -pass pass:"${{ secrets.MATCHA_DB_KEY }}"
+          rm -f matcha.db
+
+      - name: Encrypt site with Staticrypt
+        run: |
+          npm install -g staticrypt
+          staticrypt docs/index.html \
+            -p "${{ secrets.STATICRYPT_PASSWORD }}" \
+            -o docs/index.html
 
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Update RSS feeds and DB state"
-          file_pattern: 'docs/*.md docs/index.json matcha.db'
+          file_pattern: 'docs/* index.json matcha.db.enc'
           branch: main

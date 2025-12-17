@@ -60,7 +60,30 @@
   </div>
 
   <script>
-    /* __DIGEST_DATA__ */
+    const DIGESTS = {"2025-12-17":"\u003ch3\u003e\u003cimg src=\"https://news.ycombinator.com/favicon.ico\" width=\"32\" height=\"32\" /\u003e  Hacker News: Best\u003c/h3\u003e\n\n\u003cp\u003e\u003ca href=\"https://news.ycombinator.com/item?id=46302267\"\u003e🔥 \u003c/a\u003e\u003ca href=\"https://www.finalroundai.com/blog/aws-ceo-ai-cannot-replace-junior-developers\"\u003eAWS CEO says replacing junior devs with AI is \u0026lsquo;one of the dumbest ideas\u0026rsquo;\u003c/a\u003e\u003cbr\u003e\n\u003ca href=\"https://news.ycombinator.com/item?id=46301921\"\u003e🔥 \u003c/a\u003e\u003ca href=\"https://news.ycombinator.com/item?id=46301921\"\u003eTell HN: HN was down\u003c/a\u003e\u003cbr\u003e\n\u003ca href=\"https://news.ycombinator.com/item?id=46301851\"\u003e🔥 \u003c/a\u003e\u003ca href=\"https://blog.google/products/gemini/gemini-3-flash/\"\u003eGemini 3 Flash: frontier intelligence built for speed\u003c/a\u003e\u003cbr\u003e\n\u003ca href=\"https://news.ycombinator.com/item?id=46301346\"\u003e🔥 \u003c/a\u003e\u003ca href=\"https://investor.coursera.com/news/news-details/2025/Coursera-to-Combine-with-Udemy-to-Empower-the-Global-Workforce-with-Skills-for-the-AI-Era/default.aspx\"\u003eCoursera to combine with Udemy\u003c/a\u003e\u003cbr\u003e\n\u003ca href=\"https://news.ycombinator.com/item?id=46299934\"\u003e🔥 \u003c/a\u003e\u003ca href=\"https://infosec.press/brunomiguel/is-mozilla-trying-hard-to-kill-itself\"\u003eIs Mozilla trying hard to kill itself?\u003c/a\u003e\u003cbr\u003e\n\u003ca href=\"https://news.ycombinator.com/item?id=46295268\"\u003e🔥 \u003c/a\u003e\u003ca href=\"https://www.waterfox.com/blog/no-ai-here-response-to-mozilla/\"\u003eNo AI* Here – A Response to Mozilla\u0026rsquo;s Next Chapter\u003c/a\u003e\u003cbr\u003e\n\u003ca href=\"https://news.ycombinator.com/item?id=46294574\"\u003e🔥 \u003c/a\u003e\u003ca href=\"https://martin.kleppmann.com/2025/12/08/ai-formal-verification.html\"\u003eAI will make formal verification go mainstream\u003c/a\u003e\u003cbr\u003e\n\u003ca href=\"https://news.ycombinator.com/item?id=46294289\"\u003e🔥 \u003c/a\u003e\u003ca href=\"https://astral.sh/blog/ty\"\u003eAnnouncing the Beta release of ty\u003c/a\u003e\u003cbr\u003e\n\u003ca href=\"https://news.ycombinator.com/item?id=46293062\"\u003e🔥 \u003c/a\u003e\u003ca href=\"https://www.sebastianaaltonen.com/blog/no-graphics-api\"\u003eNo Graphics API\u003c/a\u003e\u003cbr\u003e\n\u003ca href=\"https://news.ycombinator.com/item?id=46291941\"\u003e🔥 \u003c/a\u003e\u003ca href=\"https://openai.com/index/new-chatgpt-images-is-here/\"\u003eGPT Image 1.5\u003c/a\u003e\u003cbr\u003e\n\u003ca href=\"https://news.ycombinator.com/item?id=46288024\"\u003e💬 \u003c/a\u003e\u003ca href=\"https://gamehistory.org/segachannel/\"\u003eSega Channel: VGHF Recovers over 100 Sega Channel ROMs (and More)\u003c/a\u003e\u003cbr\u003e\n\u003ca href=\"https://news.ycombinator.com/item?id=46286292\"\u003e🔥 \u003c/a\u003e\u003ca href=\"https://www.japantimes.co.jp/news/2025/08/21/japan/panel-hepburn-style-romanization/\"\u003eJapan to revise romanization rules for first time in 70 years\u003c/a\u003e\u003c/p\u003e\n"};
+
+
+const datesEl = document.getElementById("dates");
+const contentEl = document.getElementById("content");
+
+const dates = Object.keys(DIGESTS).sort().reverse();
+
+for (const date of dates) {
+  const div = document.createElement("div");
+  div.textContent = date;
+  div.className = "date";
+  div.onclick = () => {
+    document.querySelectorAll(".date").forEach(d => d.classList.remove("active"));
+    div.classList.add("active");
+    contentEl.innerHTML = DIGESTS[date];
+  };
+  datesEl.appendChild(div);
+}
+
+if (dates.length > 0) {
+  datesEl.firstChild.click();
+}
+
   </script>
 
 </body>

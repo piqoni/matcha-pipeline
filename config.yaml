@@ -1,4 +1,0 @@
-database_file_path: matcha.db
-feeds:
-  - http://hnrss.org/best
-markdown_dir_path: docs

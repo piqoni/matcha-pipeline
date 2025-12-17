@@ -15,6 +15,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Create config.yaml from secret
+        run: |
+          cat << 'EOF' > config.yaml
+          ${{ secrets.MATCHA_CONFIG_YAML }}
+          EOF
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:

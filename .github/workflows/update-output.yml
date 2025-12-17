@@ -66,8 +66,7 @@ jobs:
           npm install -g staticrypt
           staticrypt docs/index.html \
             -p "$STATICRYPT_PASSWORD" \
-            -o docs/index.html
-          mv encrypted docs/
+            -d docs/encrypted
 
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5

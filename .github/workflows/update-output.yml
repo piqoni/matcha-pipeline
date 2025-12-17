@@ -66,12 +66,11 @@ jobs:
           npm install -g staticrypt
           staticrypt docs/index.html \
             -p "$STATICRYPT_PASSWORD" \
-            -o docs/index_encrypted.html
-          mv docs/index_encrypted.html docs/index.html
+            -o docs/index.html
 
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Update RSS feeds and DB state"
-          file_pattern: 'docs/* matcha.db.enc docs/index.html'
+          file_pattern: 'docs/* matcha.db.enc docs/index.html encrypted/*'
           branch: main

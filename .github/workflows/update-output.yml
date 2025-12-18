@@ -40,7 +40,6 @@ jobs:
 
       - name: Run Matcha with Custom Config
         run: |
-          mkdir -p pre-docs
           matcha -c config.yaml
           matcha -c config.yaml --generate-all
 

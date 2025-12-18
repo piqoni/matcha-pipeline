@@ -15,7 +15,7 @@ const placeholder = "/* __DIGEST_DATA__ */"
 
 func main() {
 	// Load markdown files
-	files, err := filepath.Glob("docs/*.md")
+	files, err := filepath.Glob("pre-docs/*.md")
 	if err != nil {
 		panic(err)
 	}

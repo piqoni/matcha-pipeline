@@ -58,33 +58,32 @@ const contentEl = document.getElementById("content");
 
 const dates = Object.keys(DIGESTS).sort().reverse();
 
-for (const date of dates) {
+function selectDate(date, element, isInitial = false) {
+  document.querySelectorAll(".date").forEach(d => d.classList.remove("active"));
+  element.classList.add("active");
+
+  contentEl.innerHTML = DIGESTS[date];
+  contentEl.scrollTop = 0;
+
+  if (!isInitial && typeof toggleSidebar === "function" && window.innerWidth <= 768) {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar.classList.contains('open')) {
+      toggleSidebar();
+    }
+  }
+}
+
+dates.forEach((date, index) => {
   const div = document.createElement("div");
   div.textContent = date;
   div.className = "date";
-  div.onclick = () => {
-    
-    document.querySelectorAll(".date").forEach(d => d.classList.remove("active"));
-    div.classList.add("active");
-
-   
-    contentEl.innerHTML = DIGESTS[date];
-    contentEl.scrollTop = 0;
-
-    
-    if (typeof toggleSidebar === "function" && window.innerWidth <= 768) {
-      const sidebar = document.getElementById('sidebar');
-      if (sidebar.classList.contains('open')) {
-        toggleSidebar();
-      }
-    }
-  };
+  div.onclick = () => selectDate(date, div);
   datesEl.appendChild(div);
-}
 
-if (dates.length > 0) {
-  datesEl.firstChild.click();
-}
+  if (index === 0) {
+    selectDate(date, div, true);
+  }
+});
 `)
 
 	// Read template HTML

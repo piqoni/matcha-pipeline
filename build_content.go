@@ -76,7 +76,7 @@ if (dates.length > 0) {
 `)
 
 	// Read template HTML
-	htmlTemplate, err := os.ReadFile("docs/index.html")
+	htmlTemplate, err := os.ReadFile("template/index.html")
 	if err != nil {
 		panic(err)
 	}
@@ -94,7 +94,7 @@ if (dates.length > 0) {
 	)
 
 	// Overwrite index.html
-	err = os.WriteFile("docs/index.html", finalHTML, 0644)
+	err = os.WriteFile("pre-docs/index.html", finalHTML, 0644)
 	if err != nil {
 		panic(err)
 	}

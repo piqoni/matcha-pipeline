@@ -40,7 +40,7 @@ jobs:
 
       - name: Run Matcha with Custom Config
         run: |
-          mkdir -p docs
+          mkdir -p pre-docs
           matcha -c config.yaml
           matcha -c config.yaml --generate-all
 
@@ -49,7 +49,7 @@ jobs:
           go run build_content.go
 
       - name: Remove plaintext markdown
-        run: rm -f docs/*.md
+        run: rm -f pre-docs/*.md
 
       - name: Encrypt database
         run: |
@@ -67,11 +67,11 @@ jobs:
           npm install -g staticrypt
           staticrypt docs/index.html \
             -p "$STATICRYPT_PASSWORD" \
-            -d docs/encrypted
+            -d docs
 
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Update RSS feeds and DB state"
-          file_pattern: 'matcha.db.enc docs/encrypted/*'
+          file_pattern: 'matcha.db.enc docs/*'
           branch: main

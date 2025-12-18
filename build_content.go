@@ -1,112 +1,59 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
+	"log"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
+	"text/template"
 
 	"github.com/gomarkdown/markdown"
 )
 
-const placeholder = "/* __DIGEST_DATA__ */"
-
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	// Load markdown files
 	files, err := filepath.Glob("pre-docs/*.md")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	digests := map[string]string{}
-
+	digests := make(map[string]string, len(files))
 	for _, path := range files {
 		b, err := os.ReadFile(path)
 		if err != nil {
-			panic(err)
+			return err
 		}
-
 		html := markdown.ToHTML(b, nil, nil)
 		date := strings.TrimSuffix(filepath.Base(path), ".md")
 		digests[date] = string(html)
 	}
 
-	// Sort dates descending
-	dates := make([]string, 0, len(digests))
-	for d := range digests {
-		dates = append(dates, d)
-	}
-	sort.Sort(sort.Reverse(sort.StringSlice(dates)))
-
 	// JSON encode digests
-	data, err := json.Marshal(digests)
+	data, err := json.MarshalIndent(digests, "    ", "  ")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	// Build inline JS app
-	var js bytes.Buffer
-	js.WriteString("const DIGESTS = ")
-	js.Write(data)
-	js.WriteString(";\n\n")
-
-	js.WriteString(`
-const datesEl = document.getElementById("dates");
-const contentEl = document.getElementById("content");
-
-const dates = Object.keys(DIGESTS).sort().reverse();
-
-function selectDate(date, element, isInitial = false) {
-  document.querySelectorAll(".date").forEach(d => d.classList.remove("active"));
-  element.classList.add("active");
-
-  contentEl.innerHTML = DIGESTS[date];
-  contentEl.scrollTop = 0;
-
-  if (!isInitial && typeof toggleSidebar === "function" && window.innerWidth <= 768) {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar.classList.contains('open')) {
-      toggleSidebar();
-    }
-  }
-}
-
-dates.forEach((date, index) => {
-  const div = document.createElement("div");
-  div.textContent = date;
-  div.className = "date";
-  div.onclick = () => selectDate(date, div);
-  datesEl.appendChild(div);
-
-  if (index === 0) {
-    selectDate(date, div, true);
-  }
-});
-`)
-
-	// Read template HTML
-	htmlTemplate, err := os.ReadFile("template/index.html")
+	// Parse and execute template
+	tmpl, err := template.ParseFiles("template/index.html")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	if !bytes.Contains(htmlTemplate, []byte(placeholder)) {
-		panic("placeholder not found in index.html")
-	}
-
-	// Inject JS
-	finalHTML := bytes.Replace(
-		htmlTemplate,
-		[]byte(placeholder),
-		js.Bytes(),
-		1,
-	)
-
-	// Overwrite index.html
-	err = os.WriteFile("pre-docs/index.html", finalHTML, 0644)
+	out, err := os.Create("pre-docs/index.html")
 	if err != nil {
-		panic(err)
+		return err
 	}
+	defer out.Close()
+
+	return tmpl.Execute(out, map[string]string{
+		"DigestsJSON": string(data),
+	})
 }

@@ -27,7 +27,7 @@ jobs:
           go-version: '1.21'
 
       - name: Install Matcha
-        run: go install github.com/piqoni/matcha@latest
+        run: go install github.com/piqoni/matcha@generate_all
 
       - name: Decrypt database
         run: |
@@ -42,6 +42,7 @@ jobs:
         run: |
           mkdir -p docs
           matcha -c config.yaml
+          matcha -c config.yaml --generate-all
 
       - name: Build HTML content
         run: |

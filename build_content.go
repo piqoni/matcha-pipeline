@@ -63,9 +63,21 @@ for (const date of dates) {
   div.textContent = date;
   div.className = "date";
   div.onclick = () => {
+    
     document.querySelectorAll(".date").forEach(d => d.classList.remove("active"));
     div.classList.add("active");
+
+   
     contentEl.innerHTML = DIGESTS[date];
+    contentEl.scrollTop = 0;
+
+    
+    if (typeof toggleSidebar === "function" && window.innerWidth <= 768) {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar.classList.contains('open')) {
+        toggleSidebar();
+      }
+    }
   };
   datesEl.appendChild(div);
 }

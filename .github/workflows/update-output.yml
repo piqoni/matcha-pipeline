@@ -36,7 +36,7 @@ jobs:
             openssl enc -aes-256-cbc -pbkdf2 \
               -d -in matcha.db.enc \
               -out matcha.db \
-              -pass pass:"${{ secrets.MATCHA_DB_KEY }}"
+              -pass pass:"${{ secrets.MATCHA_DB_KEY }}" || exit 1
           fi
 
       - name: Run Matcha with Custom Config
@@ -57,7 +57,7 @@ jobs:
             -salt \
             -in matcha.db \
             -out matcha.db.enc \
-            -pass pass:"${{ secrets.MATCHA_DB_KEY }}"
+            -pass pass:"${{ secrets.MATCHA_DB_KEY }}" || exit 1
           rm -f matcha.db
 
       - name: Encrypt site with Staticrypt

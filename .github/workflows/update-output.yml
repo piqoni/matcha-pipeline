@@ -30,6 +30,14 @@ jobs:
       - name: Install Matcha
         run: go install github.com/piqoni/matcha@generate_all
 
+      - name: Validate MATCHA_DB_KEY
+        run: |
+          if [ -z "${{ secrets.MATCHA_DB_KEY }}" ]; then
+            echo "ERROR: MATCHA_DB_KEY secret is not set!"
+            echo "Please add MATCHA_DB_KEY to your repository secrets because database will always be encrypted, regardless ."
+            exit 1
+          fi
+
       - name: Decrypt database
         run: |
           if [ -f matcha.db.enc ]; then
@@ -60,14 +68,18 @@ jobs:
             -pass pass:"${{ secrets.MATCHA_DB_KEY }}" || exit 1
           rm -f matcha.db
 
-      - name: Encrypt site with Staticrypt
+      - name: Process Site (Encrypt or Copy)
+        shell: bash
         env:
           STATICRYPT_PASSWORD: ${{ secrets.STATICRYPT_PASSWORD }}
         run: |
-          npm install -g staticrypt
-          staticrypt pre-docs/index.html \
-            -p "$STATICRYPT_PASSWORD" \
-            -d docs
+          mkdir -p docs
+          if [ -n "$STATICRYPT_PASSWORD" ]; then
+            npm install -g staticrypt
+            staticrypt pre-docs/index.html -p "$STATICRYPT_PASSWORD" -d docs
+          else
+            cp pre-docs/index.html docs/index.html
+          fi
 
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5

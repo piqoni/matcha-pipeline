@@ -28,7 +28,7 @@ jobs:
           cache: true
 
       - name: Install Matcha
-        run: go install github.com/piqoni/matcha@generate_all
+        run: go install github.com/piqoni/matcha@latest
 
       - name: Validate MATCHA_DB_KEY
         run: |

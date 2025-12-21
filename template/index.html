@@ -134,6 +134,24 @@
         selectDate(date, div, true);
       }
     });
+
+    // Close sidebar when clicking outside
+  document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('mobile-toggle');
+
+    // If sidebar is not open, do nothing
+    if (!sidebar.classList.contains('open')) return;
+
+    // If the click happened inside the sidebar, do nothing (allow interaction)
+    if (sidebar.contains(event.target)) return;
+
+    // If the click happened on the toggle button, do nothing (let the button handle it)
+    if (toggleBtn.contains(event.target)) return;
+
+    // Otherwise (click was outside), close the sidebar
+    toggleSidebar();
+  });
   </script>
 </body>
 </html>
